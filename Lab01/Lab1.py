@@ -1,29 +1,30 @@
 # -*- coding: utf-8 -*-
 
-import datetime
+from datetime import datetime, timedelta
 import csv
 from math import log
 
 # Addind service DATETIME Vars
-now = datetime.datetime.now()
+now = datetime.now()
 epoch = datetime(1970, 1, 1)
-
-
 
 tittle = []
 date = []
 score_index = []
 rank = []
+sorted_news = []
 
 
-#We translate timestamp to epoch seconds
+# We translate timestamp to epoch seconds
 def epoch_seconds(date):
-    td = date - epoch
+    td = datetime.strptime(date, '%m/%d/%y %H:%M') - epoch
     return td.days * 86400 + td.seconds + (float(td.microseconds) / 1000000)
 
-#We calculate score, based on upvotes and downvotes
+
+# We calculate score, based on upvotes and downvotes
 def score(ups, downs):
-    return ups - downs
+    return int(ups) - int(downs)
+
 
 def hot(ups, downs, date):
     s = score(ups, downs)
@@ -35,20 +36,16 @@ def hot(ups, downs, date):
 
 def main():
     with open('HW.csv', 'rt', encoding='utf8') as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=',')
-        for row in spamreader:
-            tittle.append(row[0])
-            date.append(epoch_seconds(row[1]))
-            score_index.append(score(row[2], row[3]))
-            rank.append(hot(row[2], row[3],row[1]))
-
-    sorted = [x for _,x in sorted(zip(rank,tittle))]
-    for row in sorted:
-        print(row)
+        spamreader = list(csv.reader(csvfile, delimiter=','))
+        for element in spamreader[1:]:
+            sorted_news.append([element[0], hot(element[2], element[3],element[1])])
+            tittle.append(element[0])
+            date.append(epoch_seconds(element[1]))
+            score_index.append(score(element[2], element[3]))
+            rank.append(hot(element[2], element[3], element[1]))
+    # print (sorted_news)
+    for row in sorted(sorted_news, key=lambda x: x[1], reverse=True):
+        print(row[0])
 
 if __name__ == '__main__':
     main()
-
-
-
-
