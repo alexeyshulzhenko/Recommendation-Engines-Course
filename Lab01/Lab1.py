@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+#You may also check it out on my github (https://github.com/alexeyshulzhenko/Recommendation-Engines-Course)
+# to ensure, that this lab was done by me
 from datetime import datetime, timedelta
 import csv
 from math import log
@@ -8,10 +10,6 @@ from math import log
 now = datetime.now()
 epoch = datetime(1970, 1, 1)
 
-tittle = []
-date = []
-score_index = []
-rank = []
 sorted_news = []
 
 
@@ -38,14 +36,10 @@ def main():
     with open('HW.csv', 'rt', encoding='utf8') as csvfile:
         spamreader = list(csv.reader(csvfile, delimiter=','))
         for element in spamreader[1:]:
-            sorted_news.append([element[0], hot(element[2], element[3],element[1])])
-            tittle.append(element[0])
-            date.append(epoch_seconds(element[1]))
-            score_index.append(score(element[2], element[3]))
-            rank.append(hot(element[2], element[3], element[1]))
+            sorted_news.append([element[0], element[1],  hot(element[2], element[3],element[1])])
     # print (sorted_news)
-    for row in sorted(sorted_news, key=lambda x: x[1], reverse=True):
-        print(row[0])
+    for row in sorted(sorted_news, key=lambda x: x[2], reverse=True):
+        print("---", row[0])
 
 if __name__ == '__main__':
     main()
