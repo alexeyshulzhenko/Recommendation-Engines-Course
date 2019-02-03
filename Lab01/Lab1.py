@@ -7,7 +7,7 @@ import csv
 from math import log
 
 # Addind service DATETIME Vars
-now = datetime.now()
+now = datetime.now().timestamp()
 epoch = datetime(1970, 1, 1)
 
 sorted_news = []
@@ -28,7 +28,7 @@ def hot(ups, downs, date):
     s = score(ups, downs)
     order = log(max(abs(s), 1), 10)
     sign = 1 if s > 0 else -1 if s < 0 else 0
-    seconds = epoch_seconds(date) - 1134028003
+    seconds = epoch_seconds(date) - now
     return round(sign * order + seconds / 45000, 7)
 
 
@@ -38,8 +38,9 @@ def main():
         for element in spamreader[1:]:
             sorted_news.append([element[0], element[1],  hot(element[2], element[3],element[1])])
     # print (sorted_news)
+    print ("Now: ", now)
     for row in sorted(sorted_news, key=lambda x: x[2], reverse=True):
-        print("---", row[0])
+        print("---", row[0], row[1])
 
 if __name__ == '__main__':
     main()
