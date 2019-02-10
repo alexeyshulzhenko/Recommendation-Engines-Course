@@ -27,31 +27,33 @@ def main():
     #borrowed idea here: https://stackoverflow.com/questions/44503016/how-to-use-python-list-to-group-elements-and-average-the-group-numbers
 
     df = pd.DataFrame(raitings_list, columns=["filmid", "raiting"], dtype=float).set_index("filmid")
-    average_raiting = df.groupby(df.index).mean()
+    average_raiting = df.groupby(df.index).mean().reset_index()
 
     # Calculating damped mean using k = 5
 
+    df = pd.DataFrame(raitings_list, columns=["filmid", "raiting_s"], dtype=float).set_index("filmid")
+    sum_raiting = df.groupby(df.index).sum().reset_index()
 
-    sum_raiting = df.groupby(df.index).sum()
-    count_raiting = df.groupby(df.index).count()
+    df = pd.DataFrame(raitings_list, columns=["filmid", "raiting_c"], dtype=float).set_index("filmid")
+    count_raiting = df.groupby(df.index).count().reset_index()
 
-    sum_raiting['sum_rating_factor'] = sum_raiting["raiting"]+5*(df["raiting"].mean())
+    sum_raiting['sum_rating_factor'] = sum_raiting["raiting_s"]+5*(df["raiting_c"].mean())
 
-    count_raiting['count_rating_factor'] = count_raiting['raiting']+5
-    print(count_raiting)
+    count_raiting['count_rating_factor'] = count_raiting['raiting_c']+5
 
+    # print (count_raiting)
+    # print ("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    # print (sum_raiting)
+    raitings_damped = pd.merge(sum_raiting,count_raiting[["filmid","raiting_c","count_rating_factor"]],on=["filmid"],how="left")
+
+    raitings_damped['damped_mean']=raitings_damped['sum_rating_factor'] / raitings_damped['count_rating_factor']
+
+    ratings_mean_dampmean=pd.merge(average_raiting [['filmid','raiting']],raitings_damped[['filmid','damped_mean']],on=['filmid'],how='left')
+
+    ratings_mean_dampmean = ratings_mean_dampmean. sort_values(['raiting'], ascending=False)
+
+
+    print (ratings_mean_dampmean)
 if __name__ == '__main__':
     main()
 
-#
-# Ratings_mean=Ratings.groupby([‘movieId’])[[‘rating’]].mean().rename(columns = {‘rating’: ‘Mean_rating’}).reset_index()
-# # Calculating damped mean using alpha = 5
-# ###############Ratings_sum=Ratings.groupby([‘movieId’])[[‘rating’]].sum().rename(columns = {‘rating’: ‘sum_rating’}).reset_index()
-# Ratings_sum[‘sum_rating_factor’]=Ratings_sum[‘sum_rating’]+5*(Ratings[“rating”].mean())
-# ###############Ratings_count=Ratings.groupby([‘movieId’])[[‘rating’]].count().rename(columns = {‘rating’: ‘count_rating’}).reset_index()
-# ###############Ratings_count[‘count_rating_factor’]=Ratings_count[‘count_rating’]+5
-# Ratings_damped=pd.merge(Ratings_sum,Ratings_count[[‘movieId’,’count_rating’,’count_rating_factor’]],on=[‘movieId’],how=’left’)
-# Ratings_damped[‘damped_mean’]=Ratings_damped[‘sum_rating_factor’]/Ratings_damped[‘count_rating_factor’]
-# Ratings_mean_dampmean=pd.merge(Ratings_mean[[‘movieId’,’Mean_rating’]],Ratings_damped[[‘movieId’,’damped_mean’]],on=[‘movieId’],how=’left’)
-# # Sorting to get top rated movies
-# Ratings_mean_dampmean = Ratings_mean_dampmean.sort([‘Mean_rating’], ascending=False)
