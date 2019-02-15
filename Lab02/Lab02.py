@@ -31,7 +31,7 @@ def main():
     # df_movies['tittle'] = df_movies['tittle'].astype(str)
 
     df_movies = df_movies.reindex(columns=['filmid', 'tittle'])
-    print('df_movies: ', df_movies)
+    # print('df_movies: ', df_movies)
 
 
     #borrowed idea here: https://stackoverflow.com/questions/44503016/how-to-use-python-list-to-group-elements-and-average-the-group-numbers
@@ -70,10 +70,10 @@ def main():
     ratings_mean_dampmean = ratings_mean_dampmean.reindex(columns=['filmid','raiting','damped_mean']).reset_index()
 
 
-    print(ratings_mean_dampmean)
+    # print(ratings_mean_dampmean)
     films_sorted = pd.merge(ratings_mean_dampmean[['filmid','raiting']] , df_movies[['filmid','tittle']] ,on=['filmid'],how='left')
 
-    print (films_sorted)
+    # print (films_sorted)
 
     films_sorted.to_csv('result.csv')
 if __name__ == '__main__':
